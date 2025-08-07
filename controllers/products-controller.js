@@ -35,3 +35,33 @@ export const insertProduct = async (product) => {
 
   return result.rows[0];
 };
+
+export const fetchProducts = async () => {
+  const result = await db.query('SELECT * FROM products', []);
+  return result.rows;
+};
+
+export const fetchProduct = async (id) => {
+  const result = await db.query('SELECT * FROM products WHERE id = $1', [parseInt(id)]);
+  return result.rows[0];
+};
+
+export const deleteProduct = async (id) => {
+  const result = await db.query('DELETE FROM products WHERE id = $1 RETURNING *', [parseInt(id)]);
+  return result.rows[0];
+};
+
+
+export const updateProduct = async (id, updatedFields) => {
+  const { name, description, price, stock_quantity } = updatedFields;
+
+  const result = await db.query(
+    `UPDATE products 
+     SET name = $1, description = $2, price = $3, stock_quantity = $4 
+     WHERE id = $5 
+     RETURNING *`,
+    [name, description, price, stock_quantity, parseInt(id)]
+  );
+
+  return result.rows[0];
+};

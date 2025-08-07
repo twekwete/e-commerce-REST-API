@@ -54,14 +54,12 @@ authRouter.post("/login", passport.authenticate("local"), (req, res) => {
   console.log(req.session);
 });
 
-authRouter.get("/logout", (req, res) => {
-  req.logout((err) => {
-    if (err) return next(err);
-    req.session.destroy((err) => {
-      if (err) return next(err);
-      res.clearCookie("connect.sid", { path: "/" });
-      res.send("Logged out");
-    });
+authRouter.post("/logout", (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.status(200).send("Logout successful");
   });
 });
 
@@ -73,3 +71,4 @@ authRouter.post("/register", async (req, res) => {
     res.status(400).json({ "User registered failed": err.message });
   }
 });
+
