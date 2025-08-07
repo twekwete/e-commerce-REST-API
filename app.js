@@ -1,10 +1,11 @@
 import 'dotenv/config';
 import express from "express";
-import * as db from "./db/index.js";
 import session from "express-session";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { findUserById, findUserByEmail } from "./controllers/userController.js";
+import { findUserById, findUserByEmail } from "./controllers/user-controller.js";
+import { authRouter } from './routes/auth.js';
+
 const app = express();
 const PORT = 4500;
 
@@ -61,6 +62,8 @@ passport.use(
     }
   })
 );
+
+app.use('/auth', authRouter);
 
 app.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send("Login successful");
