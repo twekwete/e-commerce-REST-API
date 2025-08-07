@@ -2,18 +2,12 @@ import express from "express";
 import { registerUser } from "../controllers/auth-controller.js";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { findUserByEmail,findUserById } from "../controllers/user-controller.js";
+import {
+  findUserByEmail,
+  findUserById,
+} from "../controllers/user-controller.js";
 
 export const authRouter = express.Router();
-
-authRouter.post("/register", async (req, res) => {
-  try {
-   const user = await registerUser(req.body);
-   res.status(200).json({"User registered successfully":user})
-  } catch (err) {
-    res.status(400).json({"User registered failed":err.message})
-  }
-});
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -55,17 +49,27 @@ passport.use(
   })
 );
 
- authRouter.post("/login", passport.authenticate("local"), (req, res) => {
+authRouter.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).send("Login successful");
-  console.log(req.session)
+  console.log(req.session);
 });
 
-
- authRouter.post("/logout", (req, res, next) => {
-  req.logout(function (err) {
-    if (err) {
-      return next(err);
-    }
-    res.status(200).send("Logout successful");
+authRouter.get("/logout", (req, res) => {
+  req.logout((err) => {
+    if (err) return next(err);
+    req.session.destroy((err) => {
+      if (err) return next(err);
+      res.clearCookie("connect.sid", { path: "/" });
+      res.send("Logged out");
+    });
   });
+});
+
+authRouter.post("/register", async (req, res) => {
+  try {
+    const user = await registerUser(req.body);
+    res.status(200).json({ "User registered successfully": user });
+  } catch (err) {
+    res.status(400).json({ "User registered failed": err.message });
+  }
 });
