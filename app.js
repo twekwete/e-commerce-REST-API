@@ -1,20 +1,21 @@
-import 'dotenv/config';
+import "dotenv/config";
 import express from "express";
 import session from "express-session";
 import passport from "passport";
-import { authRouter } from './routes/auth.js';
-import { productsRouter } from './routes/products.js';
-import { checkIfAuthorized } from './middlewares/auth-middleware.js';
+import { authRouter } from "./routes/auth.js";
+import { productsRouter } from "./routes/products.js";
+import { orderRouter } from "./routes/order.js";
+import { checkIfAuthorized } from "./middlewares/auth-middleware.js";
+import { cartRouter } from "./routes/cart.js";
 // import cors from 'cors';
 
 const app = express();
 const PORT = 4500;
 
-
 // app.use(
 //   cors({
-//     origin: "http://localhost:3000", 
-//     credentials: true,             
+//     origin: "http://localhost:3000",
+//     credentials: true,
 //   })
 // );
 
@@ -31,12 +32,11 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use('/auth', authRouter);
-app.use('/products',checkIfAuthorized,productsRouter);
+app.use("/auth", authRouter);
+app.use("/products", checkIfAuthorized, productsRouter);
+app.use("/order", checkIfAuthorized, orderRouter);
+app.use("/cart", checkIfAuthorized, cartRouter);
 
 app.listen(PORT, () => {
   console.log("listening at PORT: ", PORT);
 });
-
-

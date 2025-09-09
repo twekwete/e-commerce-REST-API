@@ -31,5 +31,14 @@ export const registerUser = async (user) => {
     [name, surname, email, address, hashedPassword]
   );
 
+  const userId = result.rows[0].id;
+  const now = new Date();
+
+  await db.query(
+    `INSERT INTO user_carts (user_id, created_at, updated_at)
+     VALUES ($1, $2, $3)`,
+    [userId, now, now]
+  );
+
   return result.rows[0];
 };
